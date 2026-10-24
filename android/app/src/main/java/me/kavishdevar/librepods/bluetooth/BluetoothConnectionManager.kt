@@ -69,8 +69,23 @@ fun createBluetoothSocket(
         }
     }
 
+    // Direct fallback using standard Android framework APIs (supports One UI 9 / Android 17 natively)
+    try {
+        Log.d("createSocket<psm>", "Falling back to device.createInsecureL2capChannel($psm)")
+        return device.createInsecureL2capChannel(psm)
+    } catch (e: Exception) {
+        Log.w("createSocket<psm>", "device.createInsecureL2capChannel failed: ${e.message}")
+    }
+
+    try {
+        Log.d("createSocket<psm>", "Falling back to device.createL2capChannel($psm)")
+        return device.createL2capChannel(psm)
+    } catch (e: Exception) {
+        Log.w("createSocket<psm>", "device.createL2capChannel failed: ${e.message}")
+    }
+
     val errorMessage =
-        "Failed to create BluetoothSocket after trying $attemptedConstructors constructor signatures"
+        "Failed to create BluetoothSocket after trying $attemptedConstructors constructor signatures and standard L2CAP fallbacks"
     Log.e("createSocket<psm>", errorMessage)
     throw lastException ?: IllegalStateException(errorMessage)
 }

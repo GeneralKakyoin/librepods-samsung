@@ -28,8 +28,15 @@ fun isSupported(sharedPreferences: SharedPreferences): Boolean {
     val isBypassFlagActive = sharedPreferences.getBoolean("bypass_device_check.v2", false)
     if (isBypassFlagActive) return true
 
-    val isPixel = Build.MANUFACTURER.lowercase() == "google"
-    val isOppoFamily = Build.MANUFACTURER.lowercase() in listOf("oneplus", "oppo", "realme")
+    val manufacturer = Build.MANUFACTURER.lowercase()
+    val isPixel = manufacturer == "google"
+    val isOppoFamily = manufacturer in listOf("oneplus", "oppo", "realme")
+    val isSamsung = manufacturer == "samsung"
+
+    if (isSamsung) {
+        // Supported rootless on One UI 9 (Android 17) and modern Samsung builds
+        return true
+    }
 
     if (isPixel && Build.VERSION.SDK_INT == 36) {
         return Build.ID.startsWith("CP1A")

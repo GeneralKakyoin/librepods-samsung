@@ -53,12 +53,10 @@ fun NotSupportedPage(
             )
             DeviceInfoCard()
             AppInfoCard()
-            if (!BuildConfig.PLAY_BUILD) {
-                StyledListItem(
-                    name = stringResource(R.string.bypass_compatibility_check),
-                    onClick = bypassCompatibilityCheck
-                )
-            }
+            StyledListItem(
+                name = stringResource(R.string.bypass_compatibility_check),
+                onClick = bypassCompatibilityCheck
+            )
             Spacer(modifier = Modifier)
         }
     }
