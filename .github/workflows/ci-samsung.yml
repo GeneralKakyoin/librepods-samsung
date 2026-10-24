@@ -1,0 +1,35 @@
+name: Build Personal Samsung APK
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build FOSS Debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleFossDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: LibrePods-Samsung-OneUI9
+          path: android/app/build/outputs/apk/foss/debug/*.apk
