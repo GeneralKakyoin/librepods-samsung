@@ -10,26 +10,37 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           submodules: true
+          fetch-depth: 0
 
-      - uses: actions/setup-java@v4
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '21'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+
+      - name: Accept Android Licenses & Install NDK
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "ndk;30.0.14904198" "cmake;3.22.1" || true
 
       - name: Build FOSS Debug APK
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleFossDebug
+          ./gradlew assembleFossDebug --stacktrace
 
-      - name: Upload APK
+      - name: Upload Samsung APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LibrePods-Samsung-OneUI9
+          name: LibrePods-Samsung-OneUI9-APK
           path: android/app/build/outputs/apk/foss/debug/*.apk
+          retention-days: 14
